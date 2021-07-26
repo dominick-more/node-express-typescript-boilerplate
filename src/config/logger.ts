@@ -1,23 +1,25 @@
-import winston from 'winston';
+import { createLogger, format, transports, Logform, Logger } from 'winston';
 import config from './config';
 
-const enumerateErrorFormat = winston.format((info) => {
-  if (info instanceof Error) {
-    Object.assign(info, { message: info.stack });
+const enumerateErrorFormat: Logform.FormatWrap = format(
+  (info: Logform.TransformableInfo): Logform.TransformableInfo | boolean => {
+    if (info instanceof Error) {
+      return Object.assign(info, { message: info.stack });
+    }
+    return info;
   }
-  return info;
-});
+);
 
-const logger = winston.createLogger({
+const logger: Logger = createLogger({
   level: config.env === 'development' ? 'debug' : 'info',
-  format: winston.format.combine(
+  format: format.combine(
     enumerateErrorFormat(),
-    config.env === 'development' ? winston.format.colorize() : winston.format.uncolorize(),
-    winston.format.splat(),
-    winston.format.printf(({ level, message }) => `${level}: ${message}`)
+    config.env === 'development' ? format.colorize() : format.uncolorize(),
+    format.splat(),
+    format.printf(({ level, message }) => `${level}: ${message}`)
   ),
   transports: [
-    new winston.transports.Console({
+    new transports.Console({
       stderrLevels: ['error'],
     }),
   ],
