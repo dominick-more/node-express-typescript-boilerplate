@@ -6,8 +6,8 @@ import ApiError from '../utils/ApiError';
 
 /**
  * Create a user
- * @param userBody
- * @returns {Promise<IUser>}
+ * @param {IUserLeanDoc} userBody
+ * @returns {Promise<IUserDoc>}
  */
 export const createUser = async (userBody: IUserLeanDoc): Promise<IUserDoc> => {
   if (await UserModel.isEmailTaken(userBody.email)) {
@@ -23,7 +23,7 @@ export const createUser = async (userBody: IUserLeanDoc): Promise<IUserDoc> => {
  * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
  * @param {number} [options.limit] - Maximum number of results per page (default = 10)
  * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
+ * @returns {Promise<QueryResult<IUser, IUserMethods>>}
  */
 export const queryUsers = async (
   filter: FilterQuery<IUser>,
@@ -38,7 +38,7 @@ export const queryUsers = async (
 
 /**
  * Get user by id
- * @param {ObjectId} id
+ * @param {Types.ObjectId} id
  * @returns {Promise<IUserQueryWithHelper>}
  */
 export const getUserById = async (id: string | Types.ObjectId): Promise<IUserQueryWithHelper> => {
@@ -56,7 +56,7 @@ export const getUserByEmail = async (email: string): Promise<IUserQueryWithHelpe
 
 /**
  * Update user by id
- * @param {ObjectId} id
+ * @param {string | Types.ObjectId} id
  * @param {Partial<IUser>} updateBody
  * @returns {Promise<IUserDoc>}
  */
@@ -75,7 +75,7 @@ export const updateUserById = async (id: string | Types.ObjectId, updateBody: Pa
 
 /**
  * Delete user by id
- * @param {ObjectId} userId
+ * @param {string | Types.ObjectId} userId
  * @returns {Promise<IUserDoc>}
  */
 export const deleteUserById = async (userId: string | Types.ObjectId): Promise<IUserDoc> => {

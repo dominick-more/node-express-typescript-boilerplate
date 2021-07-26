@@ -37,8 +37,8 @@ const paginate = <
   schema: Schema<DocType, Model<DocType, TQueryHelpers, TMethods>, SchemaDefinitionType>
 ): void => {
   /**
-   * @typedef {Object} QueryResult
-   * @property {Document[]} results - Results found
+   * @typedef {QueryResult<DocType, TMethods>} QueryResult
+   * @property {EnforceDocument<DocType, TMethods>[]} results - Results found
    * @property {number} page - Current page
    * @property {number} limit - Maximum number of results per page
    * @property {number} totalPages - Total number of pages
@@ -46,13 +46,13 @@ const paginate = <
    */
   /**
    * Query for documents with pagination
-   * @param {Object} [filter] - Mongo filter
-   * @param {Object} [options] - Query options
+   * @param {FilterQuery<DocType>} [filter] - Mongo filter
+   * @param {PaginateOptions} [options] - Query options
    * @param {string} [options.sortBy] - Sorting criteria using the format: sortField:(desc|asc). Multiple sorting criteria should be separated by commas (,)
    * @param {string} [options.populate] - Populate data fields. Hierarchy of fields should be separated by (.). Multiple populating criteria should be separated by commas (,)
    * @param {number} [options.limit] - Maximum number of results per page (default = 10)
    * @param {number} [options.page] - Current page (default = 1)
-   * @returns {Promise<QueryResult<DocType>}
+   * @returns {Promise<QueryResult<DocType, TMethods>>}
    */
   schema.static({
     async paginate(filter: FilterQuery<DocType>, options: PaginateOptions = {}): Promise<QueryResult<DocType, TMethods>> {
@@ -76,7 +76,7 @@ const paginate = <
       let query = this.find(filter).sort(sort).skip(skip).limit(limit);
 
       if (options.populate) {
-        options.populate.split(',').forEach((populateOption: string) => {
+        options.populate.split(',').forEach((populateOption: string): void => {
           query = query.populate(
             populateOption
               .split('.')
@@ -89,7 +89,7 @@ const paginate = <
           );
         });
       }
-
+      // EnforceDocument<DocType & Record<string, EnforceDocument<Document, Record<string, unknown>>[]>, TMethods>
       const docsPromise = query.exec();
 
       return Promise.all([countPromise, docsPromise]).then((values) => {

@@ -1,9 +1,10 @@
 import httpStatus from 'http-status';
-import catchAsync from '../utils/catchAsync';
+import { IUserDoc } from '../models/user.model';
 import * as authService from '../services/auth.service';
 import * as userService from '../services/user.service';
 import * as tokenService from '../services/token.service';
 import * as emailService from '../services/email.service';
+import catchAsync from '../utils/catchAsync';
 
 export const register = catchAsync(async (req, res): Promise<void> => {
   const user = await userService.createUser(req.body);
@@ -40,10 +41,9 @@ export const resetPassword = catchAsync(async (req, res): Promise<void> => {
 });
 
 export const sendVerificationEmail = catchAsync(async (req, res): Promise<void> => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const verifyEmailToken = await tokenService.generateVerifyEmailToken((req.user as any)?.id);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await emailService.sendVerificationEmail((req.user as any)?.email, verifyEmailToken);
+  const reqUser = req.user as IUserDoc;
+  const verifyEmailToken = await tokenService.generateVerifyEmailToken(reqUser?.id);
+  await emailService.sendVerificationEmail(reqUser?.email, verifyEmailToken);
   res.status(httpStatus.NO_CONTENT).send();
 });
 

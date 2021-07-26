@@ -4,7 +4,7 @@ import httpStatus from 'http-status';
 import httpMocks from 'node-mocks-http';
 import moment from 'moment';
 import bcrypt from 'bcryptjs';
-import SMTPTransport from 'nodemailer/lib/smtp-transport';
+import { SentMessageInfo } from 'nodemailer/lib/smtp-transport';
 import app from '../../src/app';
 import config from '../../src/config/config';
 import auth from '../../src/middlewares/auth';
@@ -13,7 +13,7 @@ import * as emailService from '../../src/services/email.service';
 import ApiError from '../../src/utils/ApiError';
 import setupTestDB from '../utils/setupTestDB';
 import TokenModel from '../../src/models/token.model';
-import UserModel from '../../src/models/user.model';
+import UserModel, { IUser } from '../../src/models/user.model';
 import { roleRights } from '../../src/config/roles';
 import TokenTypes from '../../src/config/tokens';
 import { userOne, admin, insertUsers } from '../fixtures/user.fixture';
@@ -22,8 +22,24 @@ import { userOneAccessToken, adminAccessToken } from '../fixtures/token.fixture'
 setupTestDB();
 
 describe('Auth routes', () => {
+  const mockSendMailResult = (): Promise<SentMessageInfo> => {
+    const result: SentMessageInfo = {
+      accepted: [],
+      envelope: {
+        from: false,
+        to: [],
+      },
+      messageId: '',
+      pending: [],
+      rejected: [],
+      response: '',
+    };
+    const promise: Promise<SentMessageInfo> = Promise.resolve<SentMessageInfo>(result);
+    return promise;
+  };
+
   describe('POST /v1/auth/register', () => {
-    let newUser;
+    let newUser: Partial<IUser> | undefined;
     beforeEach(() => {
       newUser = {
         name: faker.name.findName(),
@@ -239,22 +255,7 @@ describe('Auth routes', () => {
 
   describe('POST /v1/auth/forgot-password', () => {
     beforeEach(() => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      jest.spyOn(emailService.transport, 'sendMail').mockResolvedValue((): Promise<SMTPTransport.SentMessageInfo> => {
-        const result: SMTPTransport.SentMessageInfo = {
-          accepted: [],
-          envelope: {
-            from: false,
-            to: [],
-          },
-          messageId: '',
-          pending: [],
-          rejected: [],
-          response: '',
-        };
-        return Promise.resolve<SMTPTransport.SentMessageInfo>(result);
-      });
+      jest.spyOn(emailService.transport, 'sendMail').mockResolvedValue(mockSendMailResult());
     });
 
     test('should return 204 and send reset password email to the user', async () => {
@@ -378,23 +379,7 @@ describe('Auth routes', () => {
 
   describe('POST /v1/auth/send-verification-email', () => {
     beforeEach(() => {
-      // Symbol SMTPTransport.SentMessageInfo is exported as a class and not a type or interface
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      jest.spyOn(emailService.transport, 'sendMail').mockResolvedValue((): Promise<SMTPTransport.SentMessageInfo> => {
-        const result: SMTPTransport.SentMessageInfo = {
-          accepted: [],
-          envelope: {
-            from: false,
-            to: [],
-          },
-          messageId: '',
-          pending: [],
-          rejected: [],
-          response: '',
-        };
-        return Promise.resolve<SMTPTransport.SentMessageInfo>(result);
-      });
+      jest.spyOn(emailService.transport, 'sendMail').mockResolvedValue(mockSendMailResult());
     });
 
     test('should return 204 and send verification email to the user', async () => {

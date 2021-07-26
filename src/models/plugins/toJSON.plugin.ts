@@ -1,6 +1,6 @@
-/* eslint-disable no-param-reassign */
-
 import { Document, Model, Schema } from 'mongoose';
+
+/* eslint-disable no-param-reassign */
 
 /**
  * A mongoose schema plugin which applies the following in the toJSON transform call:
@@ -9,12 +9,19 @@ import { Document, Model, Schema } from 'mongoose';
  */
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const deleteAtPath = (obj: any, path: string[], index: number): void => {
-  if (index === path.length - 1) {
-    delete obj[path[index]];
+const deleteAtPath = (obj: Record<string, any> | undefined, path: string[], index: number): void => {
+  if (obj === undefined || index < 0 || index >= path.length) {
     return;
   }
-  deleteAtPath(obj[path[index]], path, index + 1);
+  const selectedPath = path[index];
+  if (index === path.length - 1) {
+    delete obj[selectedPath];
+  } else {
+    const subObj = obj[selectedPath];
+    if (typeof subObj === 'object' && subObj !== null) {
+      deleteAtPath(subObj, path, index + 1);
+    }
+  }
 };
 
 const toJSON = <DocType = Document, SchemaDefinitionType = undefined>(

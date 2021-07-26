@@ -3,7 +3,7 @@ import faker from 'faker';
 import httpStatus from 'http-status';
 import app from '../../src/app';
 import setupTestDB from '../utils/setupTestDB';
-import UserModel from '../../src/models/user.model';
+import UserModel, { IUser } from '../../src/models/user.model';
 import { userOne, userTwo, admin, insertUsers } from '../fixtures/user.fixture';
 import { userOneAccessToken, adminAccessToken } from '../fixtures/token.fixture';
 
@@ -11,7 +11,7 @@ setupTestDB();
 
 describe('User routes', () => {
   describe('POST /v1/users', () => {
-    let newUser;
+    let newUser: Partial<IUser> | undefined;
 
     beforeEach(() => {
       newUser = {
@@ -130,7 +130,8 @@ describe('User routes', () => {
 
     test('should return 400 error if role is neither user nor admin', async () => {
       await insertUsers([admin]);
-      newUser.role = 'invalid';
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (newUser as any).role = 'invalid';
 
       await request(app)
         .post('/v1/users')

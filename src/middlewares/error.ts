@@ -1,13 +1,13 @@
 import mongoose from 'mongoose';
 import httpStatus from 'http-status';
 import { Request, Response } from 'express-serve-static-core';
-import { NextFunction } from 'express';
+import { NextFunction, ErrorRequestHandler } from 'express';
 import config from '../config/config';
 import logger from '../config/logger';
 import ApiError from '../utils/ApiError';
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
-export const errorConverter = (err: any, _req: Request, _res: Response, next: NextFunction): void => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const errorConverter: ErrorRequestHandler = (err: any, _req: Request, _res: Response, next: NextFunction): void => {
   let error = err;
   if (!(error instanceof ApiError)) {
     const statusCode =
@@ -18,8 +18,14 @@ export const errorConverter = (err: any, _req: Request, _res: Response, next: Ne
   next(error);
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-export const errorHandler = (err: ApiError, _req: Request, res: Response, _next?: NextFunction): void => {
+/* eslint-disable @typescript-eslint/no-unused-vars, no-unused-vars */
+export const errorHandler: ErrorRequestHandler = (
+  err: ApiError,
+  _req: Request,
+  res: Response,
+  _next: NextFunction
+): void => {
+  /* eslint-enable @typescript-eslint/no-unused-vars, no-unused-vars */
   let { statusCode, message } = err;
   if (config.env === 'production' && !err.isOperational) {
     statusCode = httpStatus.INTERNAL_SERVER_ERROR;

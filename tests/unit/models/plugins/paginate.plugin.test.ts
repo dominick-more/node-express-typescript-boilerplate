@@ -1,9 +1,10 @@
-import { model, Model, Schema, Types } from 'mongoose';
+import { model, Model, Schema, Types, VirtualType } from 'mongoose';
 import setupTestDB from '../../../utils/setupTestDB';
 import paginate, { PaginationFunc } from '../../../../src/models/plugins/paginate.plugin';
 
 interface IProject {
   name: string;
+  tasks?: VirtualType;
 }
 
 interface IProjectModel extends Model<IProject> {
@@ -68,8 +69,7 @@ describe('paginate plugin', () => {
       const task = await TaskModel.create({ name: 'Task One', project: project._id });
 
       const projectPages = await ProjectModel.paginate({ _id: project._id }, { populate: 'tasks.project' });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { tasks } = projectPages.results[0] as any;
+      const { tasks } = projectPages.results[0];
 
       expect(tasks).toHaveLength(1);
       expect(tasks[0]).toHaveProperty('_id', task._id);

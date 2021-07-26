@@ -14,7 +14,7 @@ export interface IToken {
 export interface ITokenModel extends Model<IToken, Record<string, never>, Record<string, never>> {}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ITokenDoc = IToken & Document<any, Record<string, never>, IToken>;
+export type ITokenDoc = IToken & Document<Record<string, any>, Record<string, never>, IToken>;
 
 const tokenSchema = new Schema<IToken, ITokenModel>(
   {

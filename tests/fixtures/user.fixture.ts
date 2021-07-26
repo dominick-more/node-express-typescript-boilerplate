@@ -1,14 +1,18 @@
-import mongoose from 'mongoose';
+import { Types } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import faker from 'faker';
-import UserModel, { IUserLeanDoc } from '../../src/models/user.model';
+import UserModel, { IUser, IUserLeanDoc } from '../../src/models/user.model';
 
 const password = 'password1';
 const salt = bcrypt.genSaltSync(8);
 const hashedPassword = bcrypt.hashSync(password, salt);
 
-export const userOne = {
-  _id: mongoose.Types.ObjectId(),
+export type MongooseObjectIdType = {
+  _id?: Types.ObjectId;
+};
+
+export const userOne: Readonly<IUser & MongooseObjectIdType> = {
+  _id: Types.ObjectId(),
   name: faker.name.findName(),
   email: faker.internet.email().toLowerCase(),
   password,
@@ -16,8 +20,8 @@ export const userOne = {
   isEmailVerified: false,
 };
 
-export const userTwo = {
-  _id: mongoose.Types.ObjectId(),
+export const userTwo: Readonly<IUser & MongooseObjectIdType> = {
+  _id: Types.ObjectId(),
   name: faker.name.findName(),
   email: faker.internet.email().toLowerCase(),
   password,
@@ -25,8 +29,8 @@ export const userTwo = {
   isEmailVerified: false,
 };
 
-export const admin = {
-  _id: mongoose.Types.ObjectId(),
+export const admin: Readonly<IUser & MongooseObjectIdType> = {
+  _id: Types.ObjectId(),
   name: faker.name.findName(),
   email: faker.internet.email().toLowerCase(),
   password,

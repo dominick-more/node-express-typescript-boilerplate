@@ -45,7 +45,7 @@ export interface IUserModel extends Model<IUser, Record<string, never>, IUserMet
  * Mongoose DB IUser document type with methods.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type IUserDoc = IUser & Document<any, Record<string, never>, IUser> & IUserMethods;
+export type IUserDoc = IUser & Document<Record<string, any>, Record<string, never>, IUser> & IUserMethods;
 
 /**
  * Mongoose DB Query IUser return type.
