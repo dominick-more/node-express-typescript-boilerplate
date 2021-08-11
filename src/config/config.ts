@@ -2,13 +2,21 @@ import dotenv from 'dotenv';
 import path from 'path';
 import Joi from 'joi';
 
-dotenv.config({ path: path.join(__dirname, '../../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 const envVarsSchema = Joi.object()
   .keys({
     NODE_ENV: Joi.string().valid('production', 'development', 'test').required(),
     PORT: Joi.number().default(3000),
-    MONGODB_URL: Joi.string().required().description('Mongo DB url'),
+
+    MONGO_HOST: Joi.string().required(),
+    MONGO_DB: Joi.string().required(),
+    MONGO_PORT: Joi.number().required(),
+    MONGO_USER: Joi.string().required(),
+    MONGO_PASSWORD: Joi.string().required(),
+    MONGO_PROTOCOL: Joi.string().required(),
+
+    // MONGODB_URL: Joi.string().required().description('Mongo DB url'),
     JWT_SECRET: Joi.string().required().description('JWT secret key'),
     JWT_ACCESS_EXPIRATION_MINUTES: Joi.number().default(30).description('minutes after which access tokens expire'),
     JWT_REFRESH_EXPIRATION_DAYS: Joi.number().default(30).description('days after which refresh tokens expire'),
@@ -34,15 +42,23 @@ if (error) {
   throw new Error(`Config validation error: ${error.message}`);
 }
 
+const dbURL = `${envVars.MONGO_PROTOCOL}://${envVars.MONGO_USER}:${envVars.MONGO_PASSWORD}@${envVars.MONGO_HOST}:${envVars.MONGO_PORT}`;
+// eslint-disable-next-line no-console
+console.info(`@@Mongodb:${dbURL}`);
+
 export default {
   env: envVars.NODE_ENV,
   port: envVars.PORT,
   mongoose: {
-    url: envVars.MONGODB_URL + (envVars.NODE_ENV === 'test' ? '-test' : ''),
+    // url: envVars.MONGODB_URL + (envVars.NODE_ENV === 'test' ? '-test' : ''),
+    url: dbURL,
     options: {
       useCreateIndex: true,
       useNewUrlParser: true,
       useUnifiedTopology: true,
+
+      dbName: envVars.MONGO_DB,
+      port: envVars.MONGO_PORT,
     },
   },
   jwt: {
