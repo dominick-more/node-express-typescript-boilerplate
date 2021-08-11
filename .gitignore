@@ -75,15 +75,6 @@ docker-compose.yml
 .vscode/settings.json
 .vscode/tasks.json
 
-# nyc
-.nyc_output/
-
-# Dependencies
-node_modules
-
-# yarn error logs
-yarn-error.log
-
 # Environment varibales
 !.env*.example
 
