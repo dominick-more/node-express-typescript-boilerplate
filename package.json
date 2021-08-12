@@ -75,7 +75,9 @@
     "swagger-jsdoc": "^6.0.8",
     "swagger-ui-express": "^4.1.6",
     "validator": "^13.0.0",
-    "winston": "^3.2.1"
+    "winston": "^3.3.3",
+    "winston-daily-rotate-file": "^4.5.5",
+    "package-logger": "file:../../valyuos/package-logger"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.5",

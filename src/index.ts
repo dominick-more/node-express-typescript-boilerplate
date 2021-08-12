@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import * as http from 'http';
 import app from './app';
 import config from './config/config';
-import logger from './config/logger';
+import logger from './utils/logger.util';
 
 let server: http.Server | undefined;
 

@@ -3,7 +3,7 @@ import httpStatus from 'http-status';
 import { Request, Response } from 'express-serve-static-core';
 import { NextFunction, ErrorRequestHandler } from 'express';
 import config from '../config/config';
-import logger from '../config/logger';
+import logger from '../utils/logger.util';
 import ApiError from '../utils/ApiError';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
