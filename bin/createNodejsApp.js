@@ -46,8 +46,8 @@ const repo = 'https://github.com/hagopj13/node-express-boilerplate.git';
 // Check if directory already exists
 try {
   fs.mkdirSync(appPath);
-} catch (err) {
-  if (err.code === 'EEXIST') {
+} catch (error) {
+  if (error.code === 'EEXIST') {
     console.log('Directory already exists. Please choose another name for the project.');
   } else {
     console.log(error);
